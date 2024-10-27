@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Register Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: rgb(34,195,139);
+background: linear-gradient(90deg, rgba(34,195,139,1) 16%, rgb(20, 192, 245) 84%);             height: 100vh;
+            justify-content: center;
+            align-items: top;
+            color: #333;
+        }
+        header {
+            background: rgb(34,195,139);
+background: linear-gradient(90deg, rgba(34,195,139,1) 16%, rgba(20, 192, 245) 84%);
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+        }
+        header h1{
+            margin-bottom: 20px;
+            margin-top: 10px;
+            font-size: 3em;
+        }
+        header nav ul {
+            list-style-type: none;
+        }
+        header nav ul li {
+            display: inline-block;
+            margin: 0 15px;
+            font-size: 18px;
+        }
+        header nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .container {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            margin-top: 20px;
+        }
+
+        .card {
+            width: 100%;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+            position: relative;
+ 
+        }
+
+        .card.flip {
+            transform: rotateY(180deg);
+        }
+
+        .login-box, .register-box {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            width: 100%;
+            backface-visibility: hidden;
+        }
+
+        .login-box {
+            transform: rotateY(0deg);
+        }
+
+        .register-box {
+            transform: rotateY(180deg);
+        }
+
+        .social-login button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 30px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-login button i {
+            margin-right: 10px;
+        }
+
+        .google-login {
+            background-color: white;
+            color: #444;
+            border: 1px solid #ddd;
+            transition: background 0.3s ease;
+        }
+
+        .google-login:hover {
+            background-color: #f5f5f5;
+        }
+
+        .google-login i {
+            color: #DB4437;
+        }
+
+        .apple-login {
+            background-color: black;
+            color: white;
+            transition: background 0.3s ease;
+        }
+
+        .apple-login:hover {
+            background-color: #333;
+        }
+
+        .apple-login i {
+            color: white;
+        }
+
+        .divider {
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #888;
+        }
+
+        .divider span {
+            background-color: white;
+            padding: 0 10px;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex-grow: 1;
+            height: 1px;
+            background-color: #ddd;
+        }
+
+        .form-container input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 30px;
+            font-size: 16px;
+            padding-left: 20px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-container input:focus {
+            border-color: #74ebd5;
+        }
+
+        .login-btn, .register-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .login-btn:hover, .register-btn:hover {
+            background-color: #45a049;
+        }
+
+        .forgot-password, .toggle-link {
+            margin-top: 15px;
+            color: #555;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .toggle-link {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* Desktop View */
+        @media (min-width: 769px) {
+            .container {
+                max-width: 400px;
+            }
+        }
+
+        /* Mobile View */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .login-box, .register-box {
+                width: 100%;
+                padding: 20px;
+            }
+
+            .container {
+                max-width: 100%;
+            }
+
+            .social-login button {
+                font-size: 14px;
+            }
+
+            .form-container input {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            .login-btn, .register-btn {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            .forgot-password, .toggle-link {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>VidyaVikalp</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="container">
+        <div class="card" id="auth-card">
+
+            <!-- Login Form -->
+            <div class="login-box">
+                <h1>Login</h1>
+
+                <div class="social-login">
+                    <button class="google-login">
+                        <i class="fab fa-google"></i>Login with Google
+                    </button>
+                    <button class="apple-login">
+                        <i class="fab fa-apple"></i>Login with Apple
+                    </button>
+                </div>
+
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+
+                <form class="form-container">
+                    <input type="email" placeholder="Email" required>
+                    <input type="password" placeholder="Password" required>
+                    <button type="submit" class="login-btn">Login</button>
+                </form>
+
+                <p class="forgot-password">Forgot Password?</p>
+                <p class="toggle-link" onclick="toggleAuth()">Don't have an account? Register</p>
+            </div>
+
+            <!-- Register Form -->
+            <div class="register-box">
+                <h1>Register</h1>
+
+                <div class="social-login">
+                    <button class="google-login">
+                        <i class="fab fa-google"></i>Register with Google
+                    </button>
+                    <button class="apple-login">
+                        <i class="fab fa-apple"></i>Register with Apple
+                    </button>
+                </div>
+
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+
+                <form class="form-container">
+                    <input type="text" placeholder="Full Name" required>
+                    <input type="email" placeholder="Email" required>
+                    <input type="password" placeholder="Password" required>
+                    <button type="submit" class="register-btn">Register</button>
+                </form>
+
+                <p class="toggle-link" onclick="toggleAuth()">Already have an account? Login</p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function toggleAuth() {
+            document.getElementById('auth-card').classList.toggle('flip');
+        }
+    </script>
+
+    <script>
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB4NItccmgoqliGV4tgvIDSlf02dpVKrX0",
+            authDomain: "vidyalayavikalp-21b4a.firebaseapp.com",
+            projectId: "vidyalayavikalp-21b4a",
+            storageBucket: "vidyalayavikalp-21b4a.appspot.com",
+            messagingSenderId: "190167801890",
+            appId: "1:190167801890:web:4382c8203df30587f1aa7b",
+            measurementId: "G-CW2L8NGEJL"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Login with Email and Password
+        document.querySelector('.login-btn').addEventListener('click', async (event) => {
+            event.preventDefault();
+            const email = document.querySelector('input[type="email"]').value;
+            const password = document.querySelector('input[type="password"]').value;
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                alert('Login Successful');
+                // Redirect to another page or perform any action after successful login
+            } catch (error) {
+                alert(error.message);
+            }
+}
+        });
+
+        // Register with Email and Password
+        document.querySelectorAll('.register-btn')[0].addEventListener('click', async (event) => {
+            event.preventDefault();
+            const name = document.querySelector('.register-box input[type="text"]').value;
+            const email = document.querySelectorAll('.register-box input[type="email"]')[0].value;
+            const password = document.querySelectorAll('.register-box input[type="password"]')[1].value;
+
+            try {
+                await auth.createUserWithEmailAndPassword(email, password);
+                alert('Registration Successful');
+                // Optional: Set additional user info such as display name
+                const user = auth.currentUser;
+                await user.updateProfile({
+                    displayName: name
+                });
+                // Redirect to another page or perform any action after successful registration
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        // Google Sign-In
+        const googleProvider = new firebase.auth.GoogleAuthProvider();
+        document.querySelector('.google-login').addEventListener('click', async () => {
+            try {
+                await auth.signInWithPopup(googleProvider);
+                alert('Google Sign-In Successful');
+                // Redirect to another page or perform any action after successful sign-in
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        // Apple Sign-In (this requires additional setup in Firebase Console)
+        const appleProvider = new firebase.auth.OAuthProvider('apple.com');
+        document.querySelectorAll('.apple-login')[0].addEventListener('click', async () => {
+            try {
+                await auth.signInWithPopup(appleProvider);
+                alert('Apple Sign-In Successful');
+                // Redirect to another page or perform any action after successful sign-in
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        // Firebase Auth State Listener
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // User is signed in, you can access user information here
+                console.log('User is signed in:', user);
+            } else {
+                // User is signed out
+                console.log('No user is signed in');
+            }
+        });
+    </script>
+</body>
+</html>

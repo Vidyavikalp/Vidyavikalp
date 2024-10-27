@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Details</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background: rgb(34,195,139);
+background: linear-gradient(90deg, rgba(34,195,139,1) 16%, rgb(20, 192, 245) 84%);            color: #333;
+        }
+
+        /* Header */
+        header {
+            background: rgb(34,195,139);
+background: linear-gradient(90deg, rgba(34,195,139,1) 16%, rgba(20, 192, 245) 84%);
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+        }
+        header h1{
+            margin-bottom: 20px;
+            margin-top: 10px;
+            font-size: 3em;
+        }
+        header nav ul {
+            list-style-type: none;
+        }
+        header nav ul li {
+            display: inline-block;
+            margin: 0 15px;
+            font-size: 18px;
+        }
+        header nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+         
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .school-info {
+            margin: 10px 0;
+        }
+
+        .school-info p {
+            margin: 5px 0;
+            padding: 8px;
+            background: #f9f9f9;
+            border-left: 5px solid #08c0a1;
+            margin-bottom: 20px;
+        }
+
+        .school-info h2 {
+            border-bottom: 2px solid #08c0a1;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        footer {
+            background-color: #2C3E50;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+        }
+        footer ul {
+            list-style-type: none;
+        }
+        footer ul li {
+            display: inline-block;
+            margin: 0 10px;
+        }
+        footer ul li a {
+            color: white;
+            text-decoration: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>VidyaVikalp</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About Us</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="login.html">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <img id="school-image" alt="">
+        <h2 id="school-name"></h2>
+        <div class="school-info">
+            <p id="school-description"></p>
+            <p id="school-location"></p>
+            <p id="school-contact"></p>
+            <p id="school-address"></p>
+            <p id="school-principal"></p>
+            <p id="school-affiliations"></p>
+            <p id="school-grades"></p>
+            <p id="school-fees"></p>
+        </div>
+    </div>
+    <footer>
+        <ul>
+            <li><a href="#">School Admissions</a></li>
+            <li><a href="#">College Admissions</a></li>
+            <li><a href="#">Resources</a></li>
+            <li><a href="#">Contact Us</a></li>
+        </ul>
+        <p>&copy; 2024 VidyaVikalp. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        const jsonUrl = 'https://raw.githubusercontent.com/DEEPAKMATHUR0/schools.json/main/schools.json';
+        const urlParams = new URLSearchParams(window.location.search);
+        const schoolCode = urlParams.get('code');
+
+        fetch(jsonUrl)
+            .then(response => response.json())
+            .then(data => {
+                const school = data.find(s => s.schoolCode === schoolCode);
+                if (school) {
+                    // Render school information
+                    document.getElementById('school-name').textContent = school.name;
+                    document.getElementById('school-image').src = school.image;
+                    document.getElementById('school-description').textContent = school.description;
+                    document.getElementById('school-location').textContent = `Location: ${school.location}`;
+                    document.getElementById('school-contact').textContent = `Contact: ${school.contact}`;
+                    document.getElementById('school-address').textContent = `Address: ${school.address}`;
+                    document.getElementById('school-principal').textContent = `Principal: ${school.principal_name}`;
+                    document.getElementById('school-affiliations').textContent = `Affiliations: ${school.affiliations}`;
+                    document.getElementById('school-grades').textContent = `Grades Offered: ${school.grades_offered}`;
+                    document.getElementById('school-fees').textContent = `Fees: ${school.fees}`;
+                } else {
+                    document.getElementById('school-name').textContent = 'School not found';
+                }
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    </script>
+
+</body>
+</html>
